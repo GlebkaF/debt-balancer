@@ -1,0 +1,19 @@
+{
+  "name": "debt-balancer",
+  "version": "1.0.0",
+  "description": "Приложение, помогает вести учет долгов между друзьями",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GlebkaF/debt-balancer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GlebkaF/debt-balancer/issues"
+  },
+  "homepage": "https://github.com/GlebkaF/debt-balancer#readme"
+}
