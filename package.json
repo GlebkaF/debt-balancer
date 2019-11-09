@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/GlebkaF/debt-balancer/issues"
   },
-  "homepage": "https://github.com/GlebkaF/debt-balancer#readme"
+  "homepage": "https://github.com/GlebkaF/debt-balancer#readme",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.40.0"
+  }
 }
