@@ -1,27 +1,30 @@
 const _ = require('lodash')
+const { Db } = require('mongodb');
 
 const updateBalance = balanceUpdate => currentBalance => (currentBalance || 0) + balanceUpdate;
 
 class ServiceError extends Error { }
 
 class Service {
-    constructor({ users }) {
+    constructor({ users, db }) {
         // Если баланс юзера положительный, значит ему должны
         // Если отрицательный, значит он должен
         this.users = users;
+        /** @type {Db} */
+        this._db = db;
     }
 
     /**
      * Добавляет общую покупку нa price рублей, от имени buyerId
-     * стоимость покупки поделится равными частями между пользователями usersIds
+     * стоимость покупки поделится равными частями между пользователями debtorsIds
      * 
      * @param {Object} params
-     * @param {string} params.buyerId - покупатель
+     * @param {string} params.buyerId - Кредитор - покупатель
      * @param {number} params.price - сумма в рублях 
-     * @param {Array<string>} params.usersIds - для кого предназначается покупка, может как влючать покупателя, так и не включать
+     * @param {Array<string>} params.debtorsIds - Должники, для которых предназначается покупка, может как влючать покупателя, так и не включать
      */
-    addPurchase({ buyerId, price, usersIds }) {
-        if(!buyerId || !price || !usersIds) {
+    async addPurchase({ buyerId, price, debtorsIds }) {
+        if (!buyerId || !price || !debtorsIds) {
             throw new ServiceError('Не переданы обязательные параметры')
         }
 
@@ -29,15 +32,30 @@ class Service {
             throw new ServiceError('Покупка не может быть на отрицательную сумму')
         }
 
-        const debt = Math.round(price / usersIds.length);
+        const debt = Math.round(price / debtorsIds.length);
 
-        // Убираем покупателя из списка должников, т.к. сам себе должен он быть не может
-        const debtorsIds = _.without(usersIds, buyerId);
+        // Нам нужно достать из базы всех учавствующих юзеров, чтобы обновить их баланс
+        // т.к. покупатель не обязательно внутри массива должников, нужно склеить их в единый массив.
+        const usersIds = _.uniq(_.concat(debtorsIds, buyerId)); 
+        
+        const users = await this._db.collection('users').find({            
+            id:  { $in: usersIds }
+        }).toArray()
 
-        debtorsIds.forEach((debtorId) => {
-            _.update(this.users, [debtorId, 'balances', buyerId], updateBalance(-debt));
-            _.update(this.users, [buyerId, 'balances', debtorId], updateBalance(debt));
+        const debtors = users.filter(user => user.id !== buyerId);
+        const [buyer] = users.filter(user => user.id === buyerId);
+        const bulk = await this._db.collection('users').initializeUnorderedBulkOp();
+
+        debtors.forEach(debtor => {
+            // Обновляем баланс должника
+            const updatedDebtor = _.update(debtor, ['balances', buyer.id], updateBalance(-debt));
+            bulk.find({id: debtor.id}).updateOne({ $set: updatedDebtor});
+            // Зеркально обновляем баланс кредитора
+            const updatedBuyer = _.update(buyer, ['balances', debtor.id], updateBalance(debt));
+            bulk.find({id: buyer.id}).updateOne({ $set: updatedBuyer});
         });
+
+        await bulk.execute();
     }
 
     /**
@@ -47,8 +65,8 @@ class Service {
      * @param {string} params.creditorId - кредитор, тот кому должны
      * @param {string} params.amount - на сколько рублей гасим долг
      */
-    payDebt({ debtorId, creditorId, amount }) {
-        if(!debtorId || !creditorId || !amount) {
+    async payDebt({ debtorId, creditorId, amount }) {
+        if (!debtorId || !creditorId || !amount) {
             throw new ServiceError('Не переданы обязательные параметры')
         }
 
@@ -58,18 +76,34 @@ class Service {
 
         if (amount < 0) {
             throw new ServiceError('Нельзя погасить долг на отрицательную сумму')
-        }        
+        }
+        
+        const users = await this._db.collection('users').find({            
+            id:  { $in: [debtorId, creditorId] }
+        }).toArray()
 
-        _.update(this.users, [debtorId, 'balances', creditorId], updateBalance(-amount));
-        _.update(this.users, [creditorId, 'balances', debtorId], updateBalance(amount));
+        const [debtor] = users.filter(user => user.id == debtorId);
+        const [creditor] = users.filter(user => user.id === creditorId);
+
+        const bulk = await this._db.collection('users').initializeUnorderedBulkOp();
+
+        // Обновляем баланс должника
+        const updatedDebtor = _.update(debtor, ['balances', creditor.id], updateBalance(-amount));
+        bulk.find({id: debtor.id}).updateOne({ $set: updatedDebtor});
+        // Зеркально обновляем баланс кредитора
+        const updatedCreditor = _.update(creditor, ['balances', debtor.id], updateBalance(amount));
+        bulk.find({id: creditor.id}).updateOne({ $set: updatedCreditor});
+
+        await bulk.execute();
     }
 
     /**
      * Получает информацию о юзере по id
-     * @param {string} userId 
+     * @param {string} id 
      */
-    getUserInfo({ userId }) {
-        return this.users[userId];
+    async getUserInfo({ id }) {
+        const user = await this._db.collection('users').findOne({ id })
+        return user;
     }
 }
 
