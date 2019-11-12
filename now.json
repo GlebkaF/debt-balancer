@@ -2,6 +2,7 @@
     "name": "debt-balancer",
     "version": 2,
     "env": {
-      "MONGODB_URI": "@debt-balancer-mongodb-uri"
+      "MONGODB_URI": "@debt-balancer-mongodb-uri",
+      "API_BASE_URL": "https://debt-balancer-sigma-five.now.sh/"
     }
   }
