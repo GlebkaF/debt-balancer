@@ -2,6 +2,6 @@
     "name": "debt-balancer",
     "version": 2,
     "env": {
-      "MONGODB_URI": "@my-mongodb-uri"
+      "MONGODB_URI": "@debt-balancer-mongodb-uri"
     }
   }
