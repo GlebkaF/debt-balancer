@@ -1,0 +1,10 @@
+<h2> Ты кто? </h2>
+<mat-form-field>
+    <mat-label>Выбери пользователя:</mat-label>
+    <mat-select (selectionChange)="changeUser($event)" required="true">
+      <mat-option *ngFor="let user of authService.users" [value]="user">
+        {{user}}
+      </mat-option>
+    </mat-select>
+</mat-form-field>
+<button mat-raised-button color="primary" (click)="login()"> Выбрать! </button>

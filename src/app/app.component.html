@@ -1,4 +1,5 @@
-<nav>
+<nav *ngIf="authService.currentUser.length">
+  Авторизован как {{authService.currentUser}} <button mat-raised-button color="primary" (click)="authService.logout()"> Выйти! </button>
   <ul>
     <li>
       <a [routerLink]="['/add-purchase']">
