@@ -21,11 +21,13 @@ class Service {
      * @param {Object} params
      * @param {string} params.buyerId - Кредитор - покупатель
      * @param {number} params.price - сумма в рублях 
-     * @param {Array<string>} params.debtorsIds - Должники, для которых предназначается покупка, может как влючать покупателя, так и не включать
+     * @param {Array<string>} params.debtorsIds - Должники, для которых предназначается покупка, может как влючать покупателя, так и не включать     
      */
     async addPurchase({ buyerId, price, debtorsIds }) {
+        // TODO: проверить что buyerId и debtorsIds существуют
+
         if (!buyerId || !price || !debtorsIds) {
-            throw new ServiceError('Не переданы обязательные параметры')
+            throw new ServiceError('Не передан обязательный параметр buyerId, price или debtorsIds')
         }
 
         if (price < 0) {
@@ -63,11 +65,13 @@ class Service {
      * @param {Object} params
      * @param {string} params.debtorId - должник, тот кто гасит долг
      * @param {string} params.creditorId - кредитор, тот кому должны
-     * @param {string} params.amount - на сколько рублей гасим долг
+     * @param {number} params.amount - на сколько рублей гасим долг     
      */
     async payDebt({ debtorId, creditorId, amount }) {
-        if (!debtorId || !creditorId || !amount) {
-            throw new ServiceError('Не переданы обязательные параметры')
+        // TODO: проверить что creditorId и debtorId существуют
+
+        if (!debtorId || !creditorId || !amount) {            
+            throw new ServiceError('Не передан обязательный параметр debtorId, creditorId или amount')
         }
 
         if (debtorId === creditorId) {
@@ -102,6 +106,7 @@ class Service {
      * @param {string} id 
      */
     async getUserInfo({ id }) {
+        // TODO: кидать ошибку если юзера нет?
         const user = await this._db.collection('users').findOne({ id })
         return user;
     }
