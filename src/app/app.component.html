@@ -1,0 +1,21 @@
+<nav *ngIf="authService.currentUser.length">
+  Авторизован как {{authService.currentUser}} <button mat-raised-button color="primary" (click)="authService.logout()"> Выйти! </button>
+  <ul>
+    <li>
+      <a [routerLink]="['/add-purchase']">
+        Добавить общую покупку
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/pay-debt']">
+        Погасить долг
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/balance']">
+        Узнать балансы
+      </a>
+    </li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>
