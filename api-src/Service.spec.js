@@ -173,13 +173,13 @@ describe('Service', () => {
                 {
                     id: GLEB,
                     balances: {
-                        [ANTON]: -100
+                        [ANTON]: 100
                     },
                 },
                 {
                     id: ANTON,
                     balances: {
-                        [GLEB]: 100
+                        [GLEB]: -100
                     }
                 }
             ])
@@ -212,13 +212,13 @@ describe('Service', () => {
                 {
                     id: GLEB,
                     balances: {
-                        [ANTON]: -100
+                        [ANTON]: 100
                     },
                 },
                 {
                     id: ANTON,
                     balances: {
-                        [GLEB]: 100
+                        [GLEB]: -100
                     }
                 }
             ])
@@ -236,8 +236,8 @@ describe('Service', () => {
                 db.collection('users').findOne({ id: ANTON })                
             ]);
 
-            expect(gleb.balances[ANTON]).toBe(-50);
-            expect(anton.balances[GLEB]).toBe(50);
+            expect(gleb.balances[ANTON]).toBe(50);
+            expect(anton.balances[GLEB]).toBe(-50);
         })
     })
 

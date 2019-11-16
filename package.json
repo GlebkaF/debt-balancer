@@ -6,9 +6,11 @@
     "start": "now dev",
     "build": "ng build",
     "serve": "ng serve",
-    "test": "ng test",
+    "test": "test:api && test:ng",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "test:ng": "ng test",
+    "test:api": "jest ./api"
   },
   "private": true,
   "dependencies": {

@@ -92,10 +92,10 @@ class Service {
         const bulk = await this._db.collection('users').initializeUnorderedBulkOp();
 
         // Обновляем баланс должника
-        const updatedDebtor = _.update(debtor, ['balances', creditor.id], updateBalance(-amount));
+        const updatedDebtor = _.update(debtor, ['balances', creditor.id], updateBalance(amount));
         bulk.find({id: debtor.id}).updateOne({ $set: updatedDebtor});
         // Зеркально обновляем баланс кредитора
-        const updatedCreditor = _.update(creditor, ['balances', debtor.id], updateBalance(amount));
+        const updatedCreditor = _.update(creditor, ['balances', debtor.id], updateBalance(-amount));
         bulk.find({id: creditor.id}).updateOne({ $set: updatedCreditor});
 
         await bulk.execute();
