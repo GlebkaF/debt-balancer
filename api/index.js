@@ -35,9 +35,14 @@ const jsonRpcProcessor = processJsonRpc({
   },
 })
 
-const rpcEndPoint = async (req, res) => {  
+const rpcEndPoint = async (req, res) => {
+  // Чтобы не падали preflight запросы в браузере
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(400).send('Endpoint обрабатывает только метод POST');
+    return res.status(400).send('Endpoint обрабатывает только метод POST и OPTIONS');
   }
 
   try {
