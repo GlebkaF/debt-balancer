@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { DebtsService } from '../debts.service';
+import { Observable } from 'rxjs';
+import { User } from '../user';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-balance-page',
@@ -6,10 +10,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./balance-page.component.css']
 })
 export class BalancePageComponent implements OnInit {
+  isLoading: boolean = false;
+  user: User;
 
-  constructor() { }
+  constructor(
+    private debts: DebtsService,
+    private auth: AuthService
+  ) { }
 
   ngOnInit() {
+    this.isLoading = true;
+    this.debts.getUserInfo(this.auth.currentUser).subscribe(user => {
+      this.user = user;
+      this.isLoading = false;
+    });
   }
 
 }

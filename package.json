@@ -1,7 +1,7 @@
 {
   "name": "debt-balancer",
   "version": "0.0.0",
-  "scripts": {    
+  "scripts": {
     "ng": "ng",
     "start": "now dev",
     "build": "ng build",

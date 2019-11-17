@@ -1,1 +1,7 @@
-<p>balance-page works!</p>
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<div *ngIf="!isLoading">
+    <pre>
+        {{user | json}}
+    </pre>
+</div>
+

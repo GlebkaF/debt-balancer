@@ -1,21 +1,31 @@
-<nav *ngIf="authService.currentUser.length">
-  Авторизован как {{authService.currentUser}} <button mat-raised-button color="primary" (click)="authService.logout()"> Выйти! </button>
-  <ul>
-    <li>
-      <a [routerLink]="['/add-purchase']">
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'" [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false">
+    <mat-toolbar>Навигация</mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['/add-purchase']" (click)="drawer.toggle()">
         Добавить общую покупку
       </a>
-    </li>
-    <li>
-      <a [routerLink]="['/pay-debt']">
+      <a mat-list-item [routerLink]="['/pay-debt']" (click)="drawer.toggle()">
         Погасить долг
       </a>
-    </li>
-    <li>
-      <a [routerLink]="['/balance']">
+      <a mat-list-item [routerLink]="['/balance']" (click)="drawer.toggle()">
         Узнать балансы
       </a>
-    </li>
-  </ul>
-</nav>
-<router-outlet></router-outlet>
+    </mat-nav-list>
+    <nav *ngIf="authService.currentUser.length">
+      <p>Авторизован как {{authService.currentUser}}</p>
+      <button mat-raised-button color="primary" (click)="authService.logout()">
+      Выйти! </button>
+    </nav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" *ngIf="isHandset$ | async">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Балансировщик долгов</span>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
