@@ -1,0 +1,35 @@
+.purchase-form-page{  
+  display: flex;
+  flex: 1;
+  padding: 0px 10px;
+}
+
+.purchase-form {
+  width: 100%;
+}
+
+.form-title {
+  margin-bottom: 15px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mat-radio-button {
+  display: block;
+  margin: 5px 0;
+}
+
+.row  {
+  width: 100%;
+  margin-top: .84375em;
+}
+
+.buyers-label {
+  font-size: 17px;
+}
+
+.sumbit-button {
+  width: 100%;
+}

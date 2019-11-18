@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators'
 import { User } from './user';
+import users from './users';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,10 @@ export class DebtsService {
   constructor(
     private http: HttpClient,
   ) { }
+
+  getUsers(): Observable<User[]> {
+    return of(users);
+  }
 
   /** GET heroes from the server */
   getUserInfo(id: string): Observable<User> {

@@ -1,1 +1,38 @@
-<p>add purchase works</p>
+<div class="purchase-form-page">
+  <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-form">
+    <h3 class="form-title">Добавление общей покупки</h3>
+
+    <mat-form-field class="full-width">
+      <input type="number" matInput placeholder="Общая стоимость покупки" formControlName="price">
+      <mat-error *ngIf="purchaseForm.controls['price'].hasError('required')">
+        Укажи сколько ты потратил
+      </mat-error>
+      <mat-error *ngIf="purchaseForm.controls['price'].hasError('min')">
+        Цена должна быть больше 0
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <input type="text" matInput placeholder="Описание купленного" formControlName="description">
+      <mat-error *ngIf="purchaseForm.controls['description'].hasError('required')">
+        Опиши, в двух словах, что ты купил
+      </mat-error>
+    </mat-form-field>
+
+    <div class="row">
+      <label class="buyers-label">На кого делим покупку? </label>
+      <mat-selection-list formControlName="users">
+        <mat-list-option *ngFor="let user of users$ | async as _" [value]="user.id">
+          {{user.name}}
+        </mat-list-option>
+      </mat-selection-list>
+      <mat-error *ngIf="purchaseForm.controls['users'].hasError('required')">
+        Нужно выбрать хотя бы одного человека на которого нужно разделить стоимость
+      </mat-error>
+    </div>
+
+    <div class="row">
+      <button class="sumbit-button" mat-raised-button color="primary" type="submit"> Добавить </button>
+    </div>
+  </form>
+</div>
