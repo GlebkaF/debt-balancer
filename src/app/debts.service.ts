@@ -27,8 +27,16 @@ export class DebtsService {
   getUserInfo(id: string): Observable<User> {
     return this.sendRpcRequest('getUserInfo', { id })
       .pipe(
-        tap( _ => console.log('fetched heroes', _)),
+        tap( _ => console.log('getUserInfo', _)),
         map(({ result }) => result)
+      );
+  }
+
+  addPurchase({ buyerId, price, debtorsIds }): Observable<undefined> {
+    return this.sendRpcRequest('addPurchase', { buyerId, price, debtorsIds })
+      .pipe(
+        tap( _ => console.log('addedPurchase', _)),
+        map(() => undefined)
       );
   }
 

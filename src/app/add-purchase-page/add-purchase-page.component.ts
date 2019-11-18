@@ -10,8 +10,10 @@ import { AuthService } from '../auth.service';
   templateUrl: './add-purchase-page.component.html',
   styleUrls: ['./add-purchase-page.component.css']
 })
-export class AddPurchasePageComponent implements OnInit{
+export class AddPurchasePageComponent implements OnInit {
   users$: Observable<User[]>;
+  isLoading: boolean = false;
+  isSuccess: boolean = false;
 
   purchaseForm = this.fb.group({
     price: [null, Validators.compose([
@@ -22,19 +24,41 @@ export class AddPurchasePageComponent implements OnInit{
     users: [[this.auth.currentUser], Validators.required]
   });
 
-  hasUnitNumber = false;
+  constructor(private fb: FormBuilder, private debts: DebtsService, private auth: AuthService) { }
 
-  constructor(private fb: FormBuilder, private debts: DebtsService, private auth: AuthService) {}
-
-  ngOnInit() {    
+  ngOnInit() {
     this.users$ = this.debts.getUsers();
   }
 
   onSubmit() {
-    if(!this.purchaseForm.valid) {
+    if (!this.auth.currentUser) {
+      alert('Сначала нужно авторизоваться')
       return;
     }
 
-    alert('Thanks!')
+    if (!this.purchaseForm.valid) {
+      return;
+    }
+    
+    this.isLoading = true;
+    this.isSuccess = false;
+
+    this.debts.addPurchase({
+      buyerId: this.auth.currentUser,
+      price: this.purchaseForm.controls['price'].value,
+      debtorsIds: this.purchaseForm.controls['users'].value
+    }).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.isSuccess = true;
+        this.purchaseForm.reset({
+          users: [this.auth.currentUser]
+        });        
+      },
+      error: (error) => {
+        console.error(error);
+        alert("Не могу добавить покупку, попробуй позже");
+      }
+    })
   }
 }

@@ -1,7 +1,13 @@
-<div class="purchase-form-page">
-  <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-form">
-    <h3 class="form-title">Добавление общей покупки</h3>
-
+<div class="purchase-form-page">  
+  <div *ngIf="isLoading" class="spinner">
+      <mat-spinner ></mat-spinner>
+  </div>
+    
+  <form *ngIf="!isLoading" [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-form">
+    <h1 class="form-title">Добавление общей покупки</h1>
+    <h3 *ngIf="isSuccess">
+        Покупка добавлена!
+    </h3>
     <mat-form-field class="full-width">
       <input type="number" matInput placeholder="Общая стоимость покупки" formControlName="price">
       <mat-error *ngIf="purchaseForm.controls['price'].hasError('required')">

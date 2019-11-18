@@ -1,7 +1,7 @@
 .purchase-form-page{  
   display: flex;
   flex: 1;
-  padding: 0px 10px;
+  padding: 5px 10px;
 }
 
 .purchase-form {
@@ -32,4 +32,10 @@
 
 .sumbit-button {
   width: 100%;
+}
+.spinner {  
+  display: flex;
+  flex:1;
+  align-items: center;
+  justify-content: center;
 }
