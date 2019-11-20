@@ -5,9 +5,7 @@
     
   <form *ngIf="!isLoading" [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-form">
     <h1 class="form-title">Добавление общей покупки</h1>
-    <h3 *ngIf="isSuccess">
-        Покупка добавлена!
-    </h3>
+
     <mat-form-field class="full-width">
       <input type="number" matInput placeholder="Общая стоимость покупки" formControlName="price">
       <mat-error *ngIf="purchaseForm.controls['price'].hasError('required')">
@@ -19,7 +17,7 @@
     </mat-form-field>
 
     <mat-form-field class="full-width">
-      <input type="text" matInput placeholder="Описание купленного" formControlName="description">
+      <input autocomplete="on" type="text" matInput placeholder="Описание купленного" formControlName="description">
       <mat-error *ngIf="purchaseForm.controls['description'].hasError('required')">
         Опиши, в двух словах, что ты купил
       </mat-error>

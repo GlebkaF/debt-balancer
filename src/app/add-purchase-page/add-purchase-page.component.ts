@@ -1,9 +1,12 @@
+import _ from 'lodash';
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { User } from '../user';
 import { DebtsService } from '../debts.service';
 import { AuthService } from '../auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-purchase-page',
@@ -13,7 +16,6 @@ import { AuthService } from '../auth.service';
 export class AddPurchasePageComponent implements OnInit {
   users$: Observable<User[]>;
   isLoading: boolean = false;
-  isSuccess: boolean = false;
 
   purchaseForm = this.fb.group({
     price: [null, Validators.compose([
@@ -24,7 +26,12 @@ export class AddPurchasePageComponent implements OnInit {
     users: [[this.auth.currentUser], Validators.required]
   });
 
-  constructor(private fb: FormBuilder, private debts: DebtsService, private auth: AuthService) { }
+  constructor(
+    private fb: FormBuilder,
+    private debts: DebtsService,
+    private auth: AuthService,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit() {
     this.users$ = this.debts.getUsers();
@@ -39,26 +46,29 @@ export class AddPurchasePageComponent implements OnInit {
     if (!this.purchaseForm.valid) {
       return;
     }
-    
-    this.isLoading = true;
-    this.isSuccess = false;
 
+    const description = this.purchaseForm.controls['description'].value;
+    const users = this.purchaseForm.controls['users'].value;
+
+    if(_.isEqual(users, [this.auth.currentUser])) {
+      this.toastr.warning("Выбери еще кого-нибудь чтобы покупка стала общей", " 👨‍👩‍👦‍👦  Ты выбрал только себя")
+      return;
+    }
+
+    this.isLoading = true;
     this.debts.addPurchase({
       buyerId: this.auth.currentUser,
       price: this.purchaseForm.controls['price'].value,
-      debtorsIds: this.purchaseForm.controls['users'].value
-    }).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.isSuccess = true;
-        this.purchaseForm.reset({
-          users: [this.auth.currentUser]
-        });        
-      },
-      error: (error) => {
-        console.error(error);
-        alert("Не могу добавить покупку, попробуй позже");
-      }
+      debtorsIds: users,
+      description
+    }).subscribe(() => {
+      this.isLoading = false;
+
+      this.purchaseForm.reset({
+        users: [this.auth.currentUser]
+      });
+
+      this.toastr.success(`👌 Покупка "${description}" добавлена`)
     })
   }
 }

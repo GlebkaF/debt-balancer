@@ -105,9 +105,9 @@
     "@angular-devkit/core" "8.3.18"
     rxjs "6.4.0"
 
-"@angular/animations@~8.2.13":
-  version "8.2.13"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-8.2.13.tgz#0fdcf9bdcc0b310bff09a024557f0f935ae9b5dc"
+"@angular/animations@^8.2.14":
+  version "8.2.14"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-8.2.14.tgz#76736b21e56165e6ca4925fb69605bdcc56aba7d"
   dependencies:
     tslib "^1.9.0"
 
@@ -5470,6 +5470,12 @@ negotiator@0.6.2:
 neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
+
+ngx-toastr@^11.2.1:
+  version "11.2.1"
+  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-11.2.1.tgz#130dcb416499f4419b18c39ad9cfea2e7790c7c4"
+  dependencies:
+    tslib "^1.9.0"
 
 nice-try@^1.0.4:
   version "1.0.5"
