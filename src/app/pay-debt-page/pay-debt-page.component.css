@@ -1,0 +1,28 @@
+.pay-form-page{  
+    display: flex;
+    flex: 1;
+}
+
+.description {
+    margin: 0;
+}
+  
+.pay-form {
+    width: 100%;
+}
+
+.form-title {
+    margin-bottom: 15px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.spinner {  
+    display: flex;
+    flex:1;
+    align-items: center;
+    justify-content: center;
+}
+  

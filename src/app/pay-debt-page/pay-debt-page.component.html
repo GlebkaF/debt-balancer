@@ -1,1 +1,34 @@
-<p>pay-debt-page works!</p>
+<div class="pay-form-page">
+    <div *ngIf="isLoading" class="spinner">
+        <mat-spinner></mat-spinner>
+    </div>
+    <form *ngIf="!isLoading" [formGroup]="payForm" (ngSubmit)="onSubmit()" class="pay-form">
+        <h1 class="form-title">Вернуть долг</h1>
+        <p class="description">
+            Переведи или передай человеку деньги, а затем укажи сколько вернул на этой странице
+        </p>
+
+        <mat-form-field class="full-width">
+            <mat-select placeholder="Кому возвращаем?" formControlName="creditor">
+                <mat-option *ngFor="let user of (users$ | async)" [value]="user.id">
+                    {{ user.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="payForm.controls['creditor'].hasError('required')">
+                Выбери кому ты отдал денег
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+            <input type="number" matInput placeholder="Сколько отдаем?" formControlName="amount">
+            <mat-error *ngIf="payForm.controls['amount'].hasError('required')">
+                Укажи сколько денег ты вернул!
+            </mat-error>
+            <mat-error *ngIf="payForm.controls['amount'].hasError('min')">
+                Вернуть можно только положительное количество денег
+            </mat-error>
+        </mat-form-field>
+
+        <button class="submit-button full-width" mat-raised-button color="primary" type="submit"> Вернуть денег </button>
+    </form>
+</div>

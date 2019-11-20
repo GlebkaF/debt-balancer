@@ -16,6 +16,7 @@ export class AuthService {
     'grossbox'
   ]
 
+  /** ID залогиненого юзера */
   public currentUser: string = ''
 
   constructor(private router: Router) {
