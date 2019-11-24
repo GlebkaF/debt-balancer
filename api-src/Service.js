@@ -30,6 +30,10 @@ class Service {
             throw new ServiceError('Не передан обязательный параметр buyerId, price или debtorsIds')
         }
 
+        if (!_.isNumber(price)) {
+            throw new ServiceError('price должен быть числом')
+        }
+
         if (price < 0) {
             throw new ServiceError('Покупка не может быть на отрицательную сумму')
         }
@@ -76,6 +80,10 @@ class Service {
 
         if (debtorId === creditorId) {
             throw new ServiceError('Нельзя погасить долг самому себе')
+        }
+
+        if(!_.isNumber(amount)) {
+            throw new ServiceError('amount должен быть числом')
         }
 
         if (amount < 0) {

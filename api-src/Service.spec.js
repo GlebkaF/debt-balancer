@@ -159,12 +159,46 @@ describe('Service', () => {
             expect(lera.balances[GLEB]).toBe(-300);
             expect(gleb.balances[GLEB]).toBeUndefined();
         })
+
+        it('Должен кидать ошибку если price не число', async () => {
+            const db = await getDB();
+
+            await db.collection('users').insertMany([
+                {
+                    id: LERA,
+                    balances: {},
+                },
+                {
+                    id: GLEB,
+                    balances: {
+                        [ANTON]: -100
+                    },
+                },
+                {
+                    id: ANTON,
+                    balances: {
+                        [GLEB]: 100
+                    }
+                }
+            ])
+            const service = new Service({ db });
+
+            await expect(service.addPurchase({
+                buyerId: GLEB,
+                price: "600",
+                debtorsIds: [
+                    LERA,
+                    ANTON
+                ]
+            })).rejects.toBeTruthy()
+
+        })
     })
 
     describe('Погашение долга', () => {
         it('Должен гасить долг полностью', async () => {
             const db = await getDB();
-            
+
             await db.collection('users').insertMany([
                 {
                     id: LERA,
@@ -194,7 +228,7 @@ describe('Service', () => {
 
             const [gleb, anton] = await Promise.all([
                 db.collection('users').findOne({ id: GLEB }),
-                db.collection('users').findOne({ id: ANTON })                
+                db.collection('users').findOne({ id: ANTON })
             ]);
 
             expect(gleb.balances[ANTON]).toBe(0);
@@ -203,7 +237,7 @@ describe('Service', () => {
 
         it('Должен гасить долг частично', async () => {
             const db = await getDB();
-            
+
             await db.collection('users').insertMany([
                 {
                     id: LERA,
@@ -233,18 +267,49 @@ describe('Service', () => {
 
             const [gleb, anton] = await Promise.all([
                 db.collection('users').findOne({ id: GLEB }),
-                db.collection('users').findOne({ id: ANTON })                
+                db.collection('users').findOne({ id: ANTON })
             ]);
 
             expect(gleb.balances[ANTON]).toBe(50);
             expect(anton.balances[GLEB]).toBe(-50);
+        })
+
+        it('Должен кидать ошибку если amount не число', async () => {
+            const db = await getDB();
+
+            await db.collection('users').insertMany([
+                {
+                    id: LERA,
+                    balances: {},
+                },
+                {
+                    id: GLEB,
+                    balances: {
+                        [ANTON]: 100
+                    },
+                },
+                {
+                    id: ANTON,
+                    balances: {
+                        [GLEB]: -100
+                    }
+                }
+            ])
+
+            const service = new Service({ db });
+
+            await expect(service.payDebt({
+                debtorId: ANTON,
+                creditorId: GLEB,
+                amount: "50",
+            })).rejects.toBeTruthy()
         })
     })
 
     describe('Просмотр информации о балансе юзера', () => {
         it('Должен выводить баланс существующего юзера', async () => {
             const db = await getDB();
-            
+
             await db.collection('users').insertMany([
                 {
                     id: LERA,

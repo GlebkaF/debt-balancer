@@ -1,0 +1,1 @@
+db.getCollection('users').updateMany({}, {$set: {balances: {}}})
