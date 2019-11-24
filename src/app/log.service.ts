@@ -9,7 +9,7 @@ export class LogService {
 
   error(...args: any[]) {
     console.error.apply(null, args);
-    this.toastr.error("Ошибка", args[0].message, {
+    this.toastr.error(args[0].message, "Ошибка", {
       disableTimeOut: true
     })
   }

@@ -11,8 +11,16 @@
     width: 100%;
 }
 
-.form-title {
-    margin-bottom: 15px;
+.pay-ways {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.pay-way {
+    padding-top:5px;
+    padding-bottom:5px;    
 }
 
 .full-width {

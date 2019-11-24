@@ -3,9 +3,10 @@ import { AuthService } from '../auth.service';
 import { DebtsService } from '../debts.service';
 import { Validators, FormBuilder } from '@angular/forms';
 import { User } from '../user';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-pay-debt-page',
@@ -22,19 +23,30 @@ export class PayDebtPageComponent implements OnInit {
       Validators.required,
       Validators.min(1)
     ])],
-    creditor: [null, Validators.required]
+    creditor: [null, Validators.required],
+    payWay: ['Сбер', Validators.required],
   });
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private debts: DebtsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.users$ = this.debts.getUsers().pipe(
-      map(users => users.filter(user => user.id !== this.auth.currentUser))
+    this.users$ = combineLatest([this.debts.getUsers(), this.route.queryParams]).pipe(
+      tap(([_, { amount, creditor }]) => {
+        if (amount) {
+          this.payForm.controls.amount.setValue(Number.parseInt(amount, 10));
+        }
+
+        if (creditor) {
+          this.payForm.controls.creditor.setValue(creditor);
+        }
+      }),
+      map(([users]) => users)
     );
   }
 
@@ -48,18 +60,29 @@ export class PayDebtPageComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-
     const amount = this.payForm.controls['amount'].value;
     const creditorId = this.payForm.controls['creditor'].value;
+    const description = this.payForm.controls['payWay'].value;
+
+    const isConfirmed = confirm(`Ты точно уже вернул ${creditorId} ${amount} рублей?`);
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    this.isLoading = true;
 
     this.debts.payDebt({
       debtorId: this.auth.currentUser,
       amount,
       creditorId,
+      description
     }).subscribe(() => {
       this.isLoading = false;
-      this.payForm.reset();
+
+      this.payForm.reset({
+        payWay: 'Сбер'
+      });
 
       this.toastr.success(`🙏 Возвращено ${amount} рублей`)
     })

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -53,13 +54,13 @@ export class DebtsService {
       );
   }
 
-  payDebt({ debtorId, creditorId, amount }): Observable<undefined> {
+  payDebt({ debtorId, creditorId, amount, description }): Observable<undefined> {
     return this.sendRpcRequest('payDebt', { debtorId, creditorId, amount })
       .pipe(
         tap(_ => console.log('addedPurchase', _)),
         catchError((error) => {
           this.log.error(error);
-          return of()
+          return of(undefined)
         })
       );
   }
@@ -74,6 +75,14 @@ export class DebtsService {
         params,
       },
       this.httpOptions
-    )
+    ).pipe(
+      map(res => {
+        if(res.error) {
+          throw new Error(_.get(res, 'error.message', res.error));
+        }
+    
+        return res;
+      })
+    );
   }
 }

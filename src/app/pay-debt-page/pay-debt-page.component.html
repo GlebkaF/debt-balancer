@@ -2,8 +2,7 @@
     <div *ngIf="isLoading" class="spinner">
         <mat-spinner></mat-spinner>
     </div>
-    <form *ngIf="!isLoading" [formGroup]="payForm" (ngSubmit)="onSubmit()" class="pay-form">
-        <h1 class="form-title">Вернуть долг</h1>
+    <form *ngIf="!isLoading" [formGroup]="payForm" (ngSubmit)="onSubmit()" class="pay-form">        
         <p class="description">
             Переведи или передай человеку деньги, а затем укажи сколько вернул на этой странице
         </p>
@@ -28,6 +27,12 @@
                 Вернуть можно только положительное количество денег
             </mat-error>
         </mat-form-field>
+
+        <mat-radio-group class="pay-ways full-width" formControlName="payWay">
+            <mat-radio-button class="pay-way" *ngFor="let way of ['Сбер', 'Другой банк', 'Наличка']" [value]="way">
+                {{way}}
+            </mat-radio-button>
+        </mat-radio-group>
 
         <button class="submit-button full-width" mat-raised-button color="primary" type="submit"> Вернуть денег </button>
     </form>
