@@ -25,6 +25,12 @@ import { AddPurchasePageComponent } from './add-purchase-page/add-purchase-page.
 import { PayDebtPageComponent } from './pay-debt-page/pay-debt-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 
+import { registerLocaleData } from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
+import localeRuExtra from '@angular/common/locales/extra/ru';
+
+registerLocaleData(localeRu, 'ru', localeRuExtra);
+
 @NgModule({
   declarations: [
     AppComponent,
