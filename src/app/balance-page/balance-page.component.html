@@ -1,8 +1,34 @@
-<div *ngIf="isLoading" class="spinner">
-    <mat-spinner></mat-spinner>
-</div>
-<div *ngIf="!isLoading">
-    <pre>
-        {{user | json}}
-    </pre>
+<div class="root">
+    <div *ngIf="isLoading" class="spinner">
+        <mat-spinner></mat-spinner>
+    </div>
+    <ng-container *ngIf="!isLoading">
+        <div class="balance-panel">
+            <h2 class="title"> Я должен
+                <span class="title-amount">{{ totalDebt | number:'1.0-0':'ru' }} ₽</span>
+            </h2>
+            <a *ngFor="let user of creditors" [routerLink]="['/pay-debt']" [queryParams]="{ creditor: user[0], amount: -user[1]  }" mat-raised-button color="accent"
+                class="pay-button">
+                <span>
+                    Отдать
+                    <span class="creditor-name">{{ user[0] | titlecase }}</span>
+                    {{ -user[1] }} ₽
+                </span>
+            </a>
+        </div>
+        <div class="balance-panel">
+            <h2 class="title"> Мне должны
+                <span class="title-amount">{{ totalCredit | number:'1.0-0':'ru' }} ₽</span>
+            </h2>
+            <ul>
+                <li *ngFor="let debtor of debtors" class="debtor">
+                    <span class="debtor-name">{{ debtor[0] | titlecase }}</span>
+                    <span class="debtor-underline"></span>
+                    <span class="debtor-amount">{{ debtor[1] }} ₽</span>
+                </li>
+            </ul>
+
+        </div>
+    </ng-container>
+
 </div>

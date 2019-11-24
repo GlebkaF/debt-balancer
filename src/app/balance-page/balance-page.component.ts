@@ -1,8 +1,12 @@
+import _ from 'lodash';
 import { Component, OnInit } from '@angular/core';
 import { DebtsService } from '../debts.service';
 import { Observable } from 'rxjs';
 import { User } from '../user';
 import { AuthService } from '../auth.service';
+import { map } from 'rxjs/operators';
+
+type Balance = Array<[string, number]>;
 
 @Component({
   selector: 'app-balance-page',
@@ -11,7 +15,11 @@ import { AuthService } from '../auth.service';
 })
 export class BalancePageComponent implements OnInit {
   isLoading: boolean = false;
-  user: User;
+
+  // Должники, кто должен мне
+  debtors: Balance = [];
+  // Заемщики, кому должен я
+  creditors:  Balance = [];
 
   constructor(
     private debts: DebtsService,
@@ -20,10 +28,25 @@ export class BalancePageComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading = true;
-    this.debts.getUserInfo(this.auth.currentUser).subscribe(user => {
-      this.user = user;
-      this.isLoading = false;
-    });
+    this.debts.getUserInfo(this.auth.currentUser)
+      .subscribe(user => { 
+        console.log(user)               ;
+        this.debtors = _.toPairs( _.pickBy(user.balances, number => number > 0))
+        this.creditors = _.toPairs( _.pickBy(user.balances, number => number < 0))
+        
+        this.isLoading = false;
+      });
   }
 
+  // Сколько я всего должен
+  get totalDebt() {
+    console.log("FIXME: add totalDebt  cache?");
+    return _.sumBy(this.creditors, ([, amount]) => -amount);
+  }
+
+  // Сколько мне всего должны
+  get totalCredit() {
+    console.log("FIXME: add totalCredit cache?");
+    return _.sumBy(this.debtors, ([, amount]) => amount);
+  }
 }
