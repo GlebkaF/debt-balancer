@@ -33,6 +33,14 @@ const jsonRpcProcessor = processJsonRpc({
 
     return Promise.reject("Такого юзера не существует");    
   },
+
+  async getUsers() {
+    const db = await connectToMongo();
+    const service = new Service({ db });
+    const users = await service.getUsers()
+
+    return users;
+  }
 })
 
 const rpcEndPoint = async (req, res) => {
@@ -47,8 +55,9 @@ const rpcEndPoint = async (req, res) => {
 
   try {
     return res.status(200).json(await jsonRpcProcessor(req.body));
-  } catch (e) {
-    return res.status(200).send(error);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error.message);
   }
 }
 
