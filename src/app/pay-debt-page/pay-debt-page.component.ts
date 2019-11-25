@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { DebtsService } from '../debts.service';
-import { Validators, FormBuilder } from '@angular/forms';
-import { User, CompactUser } from '../user';
-import { Observable, combineLatest, of } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { AuthService } from "../auth.service";
+import { DebtsService } from "../debts.service";
+import { Validators, FormBuilder } from "@angular/forms";
+import { User, CompactUser } from "../user";
+import { Observable, combineLatest, of } from "rxjs";
+import { map, tap, catchError } from "rxjs/operators";
+import { ToastrService } from "ngx-toastr";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: 'app-pay-debt-page',
-  templateUrl: './pay-debt-page.component.html',
-  styleUrls: ['./pay-debt-page.component.css']
+  selector: "app-pay-debt-page",
+  templateUrl: "./pay-debt-page.component.html",
+  styleUrls: ["./pay-debt-page.component.css"]
 })
 export class PayDebtPageComponent implements OnInit {
   users$: Observable<CompactUser[]>;
@@ -24,7 +24,7 @@ export class PayDebtPageComponent implements OnInit {
       Validators.compose([Validators.required, Validators.min(1)])
     ],
     creditor: [null, Validators.required],
-    payWay: ['Сбер', Validators.required]
+    payWay: ["Сбер", Validators.required]
   });
 
   constructor(
@@ -37,7 +37,7 @@ export class PayDebtPageComponent implements OnInit {
 
   ngOnInit() {
     this.users$ = combineLatest([
-      this.debts.getUsers(),
+      this.debts.users$,
       this.route.queryParams
     ]).pipe(
       tap(([_, { amount, creditor }]) => {
@@ -50,8 +50,8 @@ export class PayDebtPageComponent implements OnInit {
         }
       }),
       map(([users]) => users),
-      catchError(error => {
-        this.toastr.error('Не смог получить список пользователей');
+      catchError(() => {
+        this.toastr.error("Не смог получить список пользователей");
         return of([]);
       })
     );
@@ -59,7 +59,7 @@ export class PayDebtPageComponent implements OnInit {
 
   onSubmit() {
     if (!this.auth.currentUser) {
-      alert('Сначала нужно авторизоваться');
+      alert("Сначала нужно авторизоваться");
       return;
     }
 
@@ -83,19 +83,24 @@ export class PayDebtPageComponent implements OnInit {
 
     this.debts
       .payDebt({
-        debtorId: this.auth.currentUser,
+        debtorId: this.auth.currentUser.id,
         amount,
         creditorId,
         description
       })
-      .subscribe(() => {
-        this.isLoading = false;
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
 
-        this.payForm.reset({
-          payWay: 'Сбер'
-        });
+          this.payForm.reset({
+            payWay: "Сбер"
+          });
 
-        this.toastr.success(`🙏 Возвращено ${amount} рублей`);
+          this.toastr.success(`🙏 Возвращено ${amount} рублей`);
+        },
+        error: () => {
+          this.toastr.error("Не смог погасить долг, что-то не так");
+        }
       });
   }
 }

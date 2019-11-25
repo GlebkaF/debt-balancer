@@ -1,43 +1,36 @@
-import _ from 'lodash';
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
-import { User, CompactUser } from './user';
+import _ from "lodash";
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Observable, of } from "rxjs";
+import { tap, catchError, map, shareReplay } from "rxjs/operators";
+import { User, CompactUser } from "./user";
 
-import { LogService } from './log.service';
+import { LogService } from "./log.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class DebtsService {
-  private apiBase = 'https://debt-balancer-sigma-five.now.sh/api';
-  private users$: Observable<CompactUser[]>;
+  private apiBase = "https://debt-balancer-sigma-five.now.sh/api";
+  public users$: Observable<CompactUser[]> = this.sendRpcRequest(
+    "getUsers"
+  ).pipe(shareReplay());
 
   httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    headers: new HttpHeaders({ "Content-Type": "application/json" })
   };
 
   constructor(private http: HttpClient, private log: LogService) {}
 
-  getUsers(): Observable<CompactUser[]> {
-    if (!this.users$) {
-      this.users$ = this.sendRpcRequest('getUsers');
-      return this.users$;
-    } else {
-      return this.users$;
-    }
-  }
-
   /** GET heroes from the server */
   getUserInfo(id: string): Observable<User> {
-    return this.sendRpcRequest('getUserInfo', { id }).pipe(
-      tap(_ => console.log('getUserInfo', _)),
+    return this.sendRpcRequest("getUserInfo", { id }).pipe(
+      tap(_ => console.log("getUserInfo", _)),
       catchError(error => {
         this.log.error(error);
         return of({
           id,
-          name: 'Неизвестный',
+          name: "Неизвестный",
           balanses: {}
         });
       })
@@ -50,13 +43,13 @@ export class DebtsService {
     debtorsIds,
     description
   }): Observable<undefined> {
-    return this.sendRpcRequest('addPurchase', {
+    return this.sendRpcRequest("addPurchase", {
       buyerId,
       price,
       debtorsIds,
       description
     }).pipe(
-      tap(_ => console.log('addedPurchase', _)),
+      tap(_ => console.log("addedPurchase", _)),
       catchError(error => {
         this.log.error(error);
         return of();
@@ -70,17 +63,11 @@ export class DebtsService {
     amount,
     description
   }): Observable<undefined> {
-    return this.sendRpcRequest('payDebt', {
+    return this.sendRpcRequest("payDebt", {
       debtorId,
       creditorId,
       amount
-    }).pipe(
-      tap(_ => console.log('addedPurchase', _)),
-      catchError(error => {
-        this.log.error(error);
-        return of(undefined);
-      })
-    );
+    });
   }
 
   private sendRpcRequest(method, params = {}) {
@@ -89,7 +76,7 @@ export class DebtsService {
         this.apiBase,
         {
           id: 1,
-          jsonrpc: '2.0',
+          jsonrpc: "2.0",
           method,
           params
         },
@@ -98,7 +85,7 @@ export class DebtsService {
       .pipe(
         map(res => {
           if (res.error) {
-            throw new Error(_.get(res, 'error.message', res.error));
+            throw new Error(_.get(res, "error.message", res.error));
           }
 
           return res.result;

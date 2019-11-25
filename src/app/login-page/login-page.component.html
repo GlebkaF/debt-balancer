@@ -2,8 +2,8 @@
 <mat-form-field>
     <mat-label>Выбери пользователя:</mat-label>
     <mat-select (selectionChange)="changeUser($event)" required="true">
-      <mat-option *ngFor="let user of authService.users" [value]="user">
-        {{user}}
+      <mat-option *ngFor="let user of (debts.users$ | async)" [value]="user">
+        {{user.name}}
       </mat-option>
     </mat-select>
 </mat-form-field>

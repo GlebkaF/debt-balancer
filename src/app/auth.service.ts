@@ -1,45 +1,36 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { DebtsService } from "./debts.service";
+import { CompactUser, User } from "./user";
+import { Observable } from "rxjs";
+import { shareReplay } from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AuthService {
-  public users: Array<string> = [
-    'glebkaf',
-    'Devkabezruki',
-    'igor_naz',
-    'glebmozhetvzhopu',
-    'serega_phenomen',
-    'marinerius',
-    'anikin_antosha',
-    'grossbox'
-  ]
-
   /** ID залогиненого юзера */
-  public currentUser: string = ''
+  public currentUser$: Observable<User>;
+  public currentUser: CompactUser;
 
-  constructor(private router: Router) {
-    const login = localStorage.getItem('login');
-
-    if(this.users.includes(login)) {
-      this.currentUser = login;
+  constructor(private router: Router, private debts: DebtsService) {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      this.login(user);
+    } catch (e) {
+      localStorage.setItem("user", undefined);
     }
   }
 
-  login(login: string) {
-    if(!this.users.includes(login)) {
-      throw new Error('Такого юзера несуществует');
-    }
-
-    this.currentUser = login;
-
-    localStorage.setItem('login', login);
+  login(user: CompactUser) {
+    this.currentUser$ = this.debts.getUserInfo(user.id).pipe(shareReplay());
+    this.currentUser = user;
+    localStorage.setItem("user", JSON.stringify(user));
   }
 
   logout() {
-    this.currentUser = '';
-    localStorage.setItem('login', '');
-    this.router.navigate(['/login/']);
+    this.currentUser = undefined;
+    localStorage.setItem("user", undefined);
+    this.router.navigate(["/login/"]);
   }
 }

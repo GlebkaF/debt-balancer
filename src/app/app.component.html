@@ -1,8 +1,18 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" [attr.role]="navigation" mode="over" opened="false">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    [attr.role]="navigation"
+    mode="over"
+    opened="false"
+  >
     <mat-toolbar>Навигация</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item [routerLink]="['/add-purchase']" (click)="drawer.close()">
+      <a
+        mat-list-item
+        [routerLink]="['/add-purchase']"
+        (click)="drawer.close()"
+      >
         Добавить общую покупку
       </a>
       <a mat-list-item [routerLink]="['/pay-debt']" (click)="drawer.close()">
@@ -12,22 +22,31 @@
         Узнать балансы
       </a>
     </mat-nav-list>
-    <nav *ngIf="authService.currentUser.length">
-      <p>Авторизован как {{authService.currentUser}}</p>
-      <button mat-raised-button color="primary" (click)="authService.logout()">
+    <nav *ngIf="authService.currentUser">
+      <p>Авторизован как {{ authService.currentUser.name }}</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="drawer.close() && authService.logout()"
+      >
         Выйти
       </button>
     </nav>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+      >
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>Балансировщик долгов</span>
     </mat-toolbar>
     <div class="app-container">
       <router-outlet></router-outlet>
-    </div>    
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

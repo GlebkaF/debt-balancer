@@ -1,21 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { AuthService } from "../auth.service";
+import { Router } from "@angular/router";
+import { DebtsService } from "../debts.service";
+import { CompactUser } from "../user";
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.css']
+  selector: "app-login-page",
+  templateUrl: "./login-page.component.html",
+  styleUrls: ["./login-page.component.css"]
 })
 export class LoginPageComponent implements OnInit {
-  private user: string
+  private user: CompactUser;
+
   constructor(
     public authService: AuthService,
-    private router: Router
-  ) { }
+    private router: Router,
+    public debts: DebtsService
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   changeUser({ value }) {
     this.user = value;
@@ -23,7 +26,6 @@ export class LoginPageComponent implements OnInit {
 
   login() {
     this.authService.login(this.user);
-    this.router.navigate(['/add-purchase/']);
+    this.router.navigate(["/add-purchase/"]);
   }
-
 }
