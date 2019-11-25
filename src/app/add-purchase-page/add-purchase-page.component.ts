@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { User } from '../user';
+import { CompactUser } from '../user';
 import { DebtsService } from '../debts.service';
 import { AuthService } from '../auth.service';
 import { ToastrService } from 'ngx-toastr';
@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./add-purchase-page.component.css']
 })
 export class AddPurchasePageComponent implements OnInit {
-  users$: Observable<User[]>;
+  users$: Observable<CompactUser[]>;
   isLoading: boolean = false;
 
   purchaseForm = this.fb.group({
